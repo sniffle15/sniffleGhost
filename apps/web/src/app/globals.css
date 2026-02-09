@@ -1,0 +1,199 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --bg-base: #1f232b;
+  --bg-sidebar: #191d24;
+  --bg-surface: #2a2f38;
+  --bg-surface-soft: #252a33;
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text-main: #f1f5f9;
+  --text-muted: #9aa4b2;
+  --accent: #ef4444;
+  --accent-hover: #dc2626;
+  --ok: #22c55e;
+  --warn: #f59e0b;
+  --danger: #ef4444;
+}
+
+body {
+  @apply min-h-screen font-body;
+  background: var(--bg-base);
+  color: var(--text-main);
+}
+
+.bg-app {
+  background: var(--bg-base);
+}
+
+main {
+  @apply min-h-0;
+}
+
+.card-glass {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-surface);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.dash-panel {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-surface);
+  border-radius: 14px;
+}
+
+.dash-panel-soft {
+  border: 1px solid var(--border-soft);
+  background: var(--bg-surface-soft);
+  border-radius: 12px;
+}
+
+.dash-title {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 1.65rem;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+
+.dash-subtitle {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+}
+
+.dash-muted {
+  color: var(--text-muted);
+}
+
+.dash-divider {
+  height: 1px;
+  background: var(--border-soft);
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.full-bleed {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.scroll-area {
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+.scroll-area::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.scroll-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.react-flow__handle {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+  background: #0f1621;
+}
+
+.react-flow__handle:hover {
+  width: 16px;
+  height: 16px;
+}
+
+.react-flow__handle.connectable {
+  cursor: crosshair;
+}
+
+@keyframes dashFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalBackdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dash-animate-in {
+  animation: dashFadeUp 260ms ease both;
+}
+
+.motion-soft {
+  transition: all 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dash-hover-lift:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+}
+
+.modal-backdrop {
+  backdrop-filter: blur(8px);
+  animation: modalBackdropIn 180ms ease both;
+}
+
+.modal-panel {
+  animation: modalPanelIn 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-animate-in,
+  .modal-backdrop,
+  .modal-panel {
+    animation: none !important;
+  }
+  .motion-soft,
+  .dash-hover-lift {
+    transition: none !important;
+  }
+}
+

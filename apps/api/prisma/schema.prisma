@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String?        @unique
+  passwordHash  String?
+  name          String?
+  discordId     String?        @unique
+  discordName   String?
+  discordAvatar String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  bots          Bot[]
+  memberships   BotMember[]
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  revokedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Bot {
+  id             String   @id @default(uuid())
+  ownerId        String
+  name           String
+  description    String?
+  prefix         String   @default("!")
+  applicationId  String
+  encryptedToken String
+  status         String   @default("stopped")
+  testGuildId    String?
+  lastHeartbeat  DateTime?
+  lastError      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  owner     User                @relation(fields: [ownerId], references: [id])
+  members   BotMember[]
+  commands  Command[]
+  logs      BotLog[]
+  variables PersistentVariable[]
+}
+
+model BotMember {
+  id        String   @id @default(uuid())
+  botId     String
+  userId    String
+  role      String
+  createdAt DateTime @default(now())
+
+  bot  Bot  @relation(fields: [botId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([botId, userId])
+}
+
+model Command {
+  id              String   @id @default(uuid())
+  botId           String
+  name            String
+  description     String
+  type            String
+  options         Json?
+  permissions     Json?
+  cooldownSeconds Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  bot      Bot              @relation(fields: [botId], references: [id])
+  versions CommandVersion[]
+}
+
+model CommandVersion {
+  id              String   @id @default(uuid())
+  commandId       String
+  versionNumber   Int
+  status          String   @default("draft")
+  notes           String?
+  workflowJson    Json
+  compiledAstJson Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  command Command @relation(fields: [commandId], references: [id])
+}
+
+model BotLog {
+  id      String   @id @default(uuid())
+  botId   String
+  level   String
+  message String
+  ts      DateTime @default(now())
+  meta    Json?
+
+  bot Bot @relation(fields: [botId], references: [id])
+}
+
+model PersistentVariable {
+  id        String   @id @default(uuid())
+  botId     String
+  scope     String
+  scopeId   String
+  key       String
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bot Bot @relation(fields: [botId], references: [id])
+
+  @@unique([botId, scope, scopeId, key])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String
+  action     String
+  entityType String
+  entityId   String
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  actor User @relation(fields: [actorId], references: [id])
+}

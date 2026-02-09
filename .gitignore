@@ -1,0 +1,10 @@
+﻿node_modules
+.pnpm-store
+.env
+.env.local
+.env.*
+!.env.production.example
+!**/.env.example
+dist
+.next
+prisma/migrations

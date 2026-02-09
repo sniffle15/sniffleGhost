@@ -1,0 +1,27 @@
+{
+  "name": "botghost-fake",
+  "private": true,
+  "packageManager": "pnpm@10.28.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm -C packages/shared build && docker compose up -d && pnpm -r --parallel dev",
+    "prod:up": "docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build",
+    "prod:down": "docker compose --env-file .env.production -f docker-compose.prod.yml down",
+    "prod:logs": "docker compose --env-file .env.production -f docker-compose.prod.yml logs -f --tail=200",
+    "prod:migrate": "docker compose --env-file .env.production -f docker-compose.prod.yml run --rm api pnpm -C apps/api prisma migrate deploy",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "db:migrate": "pnpm -C apps/api prisma migrate dev",
+    "db:seed": "pnpm -C apps/api prisma db seed",
+    "db:generate": "pnpm -C apps/api prisma generate",
+    "db:studio": "pnpm -C apps/api prisma studio"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}

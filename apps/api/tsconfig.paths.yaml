@@ -1,0 +1,4 @@
+﻿compilerOptions:
+  baseUrl: .
+  paths:
+    "@botghost/shared": ["../../packages/shared/src"]
