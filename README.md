@@ -14,6 +14,50 @@ sniffleGhost is a monorepo for hosting Discord bots with a visual workflow build
 - Queue/Jobs: `Redis`, `BullMQ`
 - Runner: `discord.js`
 
+## Install from Release (v1.0.0)
+Release URL:
+- `https://github.com/sniffle15/sniffleGhost/releases/tag/v1.0.0`
+
+### Windows (PowerShell) - auto download + setup
+```powershell
+$version = "v1.0.0"
+$repo = "sniffle15/sniffleGhost"
+$zip = "https://github.com/$repo/archive/refs/tags/$version.zip"
+
+Invoke-WebRequest -Uri $zip -OutFile sniffleGhost-$version.zip
+Expand-Archive -Path sniffleGhost-$version.zip -DestinationPath .
+Set-Location "sniffleGhost-$version"
+
+pnpm install
+Copy-Item apps/api/.env.example apps/api/.env
+Copy-Item apps/web/.env.example apps/web/.env
+Copy-Item apps/runner/.env.example apps/runner/.env
+Copy-Item .env.production.example .env.production
+```
+
+### Linux/macOS - auto download + setup
+```bash
+VERSION=v1.0.0
+REPO=sniffle15/sniffleGhost
+URL="https://github.com/$REPO/archive/refs/tags/$VERSION.tar.gz"
+
+curl -L "$URL" -o "sniffleGhost-$VERSION.tar.gz"
+tar -xzf "sniffleGhost-$VERSION.tar.gz"
+cd "sniffleGhost-${VERSION#v}"
+
+pnpm install
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
+cp apps/runner/.env.example apps/runner/.env
+cp .env.production.example .env.production
+```
+
+### Env files to edit after copy
+- `apps/api/.env`
+- `apps/web/.env`
+- `apps/runner/.env`
+- `.env.production` (for server/prod deployment)
+
 ## Local Development
 ### 1) Install
 ```bash
