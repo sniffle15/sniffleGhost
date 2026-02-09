@@ -1,7 +1,6 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: sniffleghost-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -17,7 +16,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: sniffleghost-redis
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
@@ -32,7 +30,6 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    container_name: sniffleghost-api
     restart: unless-stopped
     depends_on:
       postgres:
@@ -42,6 +39,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
+      HOST: 0.0.0.0
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
@@ -61,7 +59,6 @@ services:
     build:
       context: .
       dockerfile: apps/runner/Dockerfile
-    container_name: sniffleghost-runner
     restart: unless-stopped
     depends_on:
       api:
@@ -80,7 +77,6 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
-    container_name: sniffleghost-web
     restart: unless-stopped
     depends_on:
       api:
@@ -88,7 +84,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      NEXT_PUBLIC_API_URL: ${API_PUBLIC_URL}`r`n      NEXT_PUBLIC_WEB_URL: ${WEB_PUBLIC_URL}
+      NEXT_PUBLIC_API_URL: ${API_PUBLIC_URL}
+      NEXT_PUBLIC_WEB_URL: ${WEB_PUBLIC_URL}
       NEXT_SERVER_ACTIONS_ALLOWED_ORIGINS: ${NEXT_SERVER_ACTIONS_ALLOWED_ORIGINS}
     ports:
       - "${WEB_PORT:-3000}:3000"
