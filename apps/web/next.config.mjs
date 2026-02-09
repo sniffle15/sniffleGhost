@@ -1,8 +1,8 @@
-﻿import path from "node:path";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const allowedOrigins = (process.env.NEXT_SERVER_ACTIONS_ALLOWED_ORIGINS ?? "localhost:3000")
+const allowedOrigins = (process.env.NEXT_SERVER_ACTIONS_ALLOWED_ORIGINS ?? (process.env.NODE_ENV === "production" ? "" : "localhost:3000"))
   .split(",")
   .map((value) => value.trim())
   .filter(Boolean);
@@ -22,3 +22,4 @@ const nextConfig = {
 };
 
 export default nextConfig;
+

@@ -1,5 +1,6 @@
-﻿import { Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import path from "node:path";
 import { AuthModule } from "./auth/auth.module";
 import { BotsModule } from "./bots/bots.module";
 import { CommandsModule } from "./commands/commands.module";
@@ -11,7 +12,13 @@ import { PrismaModule } from "./common/prisma.module";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [
+        path.resolve(process.cwd(), ".env"),
+        path.resolve(process.cwd(), "../../.env")
+      ]
+    }),
     QueueModule,
     PrismaModule,
     AuthModule,

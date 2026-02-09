@@ -1,7 +1,16 @@
 import { logger } from "./logging";
 
-const API_URL = process.env.API_URL ?? "http://localhost:4000";
-const RUNNER_SECRET = process.env.RUNNER_SECRET ?? "runner-secret";
+const isProd = process.env.NODE_ENV === "production";
+const API_URL = process.env.API_URL ?? (isProd ? "" : "http://localhost:4000");
+const RUNNER_SECRET = process.env.RUNNER_SECRET ?? (isProd ? "" : "runner-secret");
+
+if (!API_URL) {
+  throw new Error("API_URL is required");
+}
+
+if (!RUNNER_SECRET) {
+  throw new Error("RUNNER_SECRET is required");
+}
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {

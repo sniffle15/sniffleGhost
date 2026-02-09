@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post, Query, Res, UseGuards, UsePipes, Req } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, Res, UseGuards, UsePipes, Req, InternalServerErrorException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import type { Response, Request } from "express";
 import { AuthService } from "./auth.service";
 import { ZodValidationPipe } from "../common/zod.pipe";
@@ -7,7 +8,10 @@ import { JwtAuthGuard } from "../common/jwt-auth.guard";
 
 @Controller("/auth")
 export class AuthController {
-  constructor(private auth: AuthService) {}
+  constructor(
+    private auth: AuthService,
+    private config: ConfigService
+  ) {}
 
   @Post("/register")
   @UsePipes(new ZodValidationPipe(RegisterSchema))
@@ -46,11 +50,17 @@ export class AuthController {
     @Res() res: Response
   ) {
     const result = await this.auth.handleDiscordCallback(code, state);
-    const webUrl = process.env.WEB_URL ?? "http://localhost:3000";
+    const webUrl = this.config.get<string>("WEB_URL");
+
+    if (!webUrl) {
+      throw new InternalServerErrorException("WEB_URL is not configured");
+    }
+
     const params = new URLSearchParams({
       accessToken: result.accessToken,
       refreshToken: result.refreshToken ?? ""
     });
+
     return res.redirect(`${webUrl}/auth/discord/callback?${params.toString()}`);
   }
 

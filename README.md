@@ -75,6 +75,9 @@ cp .env.production.example .env.production
 - `apps/runner/.env`
 - `.env.production` (for server/prod deployment)
 
+Optional:
+- root `.env` as shared fallback for API/Runner (`apps/*/.env` still has priority)
+
 ### Minimal env checklist
 `apps/api/.env`
 - `DATABASE_URL`
@@ -84,9 +87,12 @@ cp .env.production.example .env.production
 - `ENCRYPTION_KEY`
 - `RUNNER_SECRET`
 - `WEB_URL`
+- `HOST` (recommended `0.0.0.0` on servers)
+- `CORS_ORIGINS` (comma-separated, e.g. `https://app.example.com`)
 
 `apps/web/.env`
 - `NEXT_PUBLIC_API_URL`
+- `NEXT_PUBLIC_WEB_URL`
 - `NEXT_SERVER_ACTIONS_ALLOWED_ORIGINS`
 
 `apps/runner/.env`
@@ -223,7 +229,14 @@ docker exec -t sniffleghost-postgres pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" 
 cat backup.sql | docker exec -i sniffleghost-postgres psql -U "$POSTGRES_USER" "$POSTGRES_DB"
 ```
 
----
+### Restart
+```
+pnpm prod:down && pnpm prod:up
+```
+**ODER:**
+```
+pnpm prod:down && pnpm install --frozen-lockfile && pnpm prod:up && pnpm prod:migrate && pnpm prod:logs
+```
 
 ## Security Notes
 - Bot tokens are encrypted at rest via `ENCRYPTION_KEY` (AES-256-GCM in API layer).

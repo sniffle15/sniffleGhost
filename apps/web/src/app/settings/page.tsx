@@ -1,4 +1,9 @@
-﻿export default function SettingsPage() {
+import { API_URL } from "@/lib/api";
+
+export default function SettingsPage() {
+  const webUrl = process.env.NEXT_PUBLIC_WEB_URL ?? "not configured";
+  const apiDocsUrl = API_URL ? `${API_URL}/docs` : "not configured";
+
   return (
     <div className="space-y-4">
       <section className="dash-panel p-5">
@@ -15,13 +20,13 @@
           <div className="dash-panel-soft p-4">
             <p className="dash-subtitle">API</p>
             <p className="mt-1 text-sm text-fog">
-              <code>http://localhost:4000/docs</code>
+              <code>{apiDocsUrl}</code>
             </p>
           </div>
           <div className="dash-panel-soft p-4">
             <p className="dash-subtitle">Web</p>
             <p className="mt-1 text-sm text-fog">
-              <code>http://localhost:3000</code>
+              <code>{webUrl}</code>
             </p>
           </div>
         </div>
