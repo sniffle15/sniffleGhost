@@ -1,0 +1,308 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getPathValue = getPathValue;
+exports.renderTemplate = renderTemplate;
+exports.evaluateCondition = evaluateCondition;
+exports.evaluateConditionGroup = evaluateConditionGroup;
+exports.resolveTemplateValue = resolveTemplateValue;
+exports.resolveExpressionValue = resolveExpressionValue;
+const templatePattern = /\{\{\s*([^}]+)\s*\}\}/g;
+const shorthandPattern = /(?<!{){([a-zA-Z0-9_.]+)}(?!})/g;
+function getPathValue(obj, path) {
+    if (!path)
+        return undefined;
+    const parts = path.split(".").filter(Boolean);
+    let current = obj;
+    for (const part of parts) {
+        if (current == null)
+            return undefined;
+        current = current[part];
+    }
+    return current;
+}
+function parseLiteral(value) {
+    const trimmed = value.trim();
+    if (trimmed === "true")
+        return true;
+    if (trimmed === "false")
+        return false;
+    if (trimmed === "null")
+        return null;
+    if (trimmed === "undefined")
+        return undefined;
+    if ((trimmed.startsWith("\"") && trimmed.endsWith("\"")) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+        return trimmed.slice(1, -1);
+    }
+    // Keep long integer-like strings (e.g. Discord snowflake IDs) as strings.
+    const integerPattern = /^-?\d+$/;
+    if (integerPattern.test(trimmed) && trimmed.replace("-", "").length >= 15) {
+        return undefined;
+    }
+    const num = Number(trimmed);
+    if (!Number.isNaN(num) && trimmed !== "" && Number.isFinite(num))
+        return num;
+    return undefined;
+}
+function splitArgs(args) {
+    const result = [];
+    let current = "";
+    let quote = null;
+    for (let i = 0; i < args.length; i += 1) {
+        const ch = args[i];
+        if (quote) {
+            if (ch === quote) {
+                quote = null;
+            }
+            current += ch;
+            continue;
+        }
+        if (ch === "\"" || ch === "'") {
+            quote = ch;
+            current += ch;
+            continue;
+        }
+        if (ch === ",") {
+            result.push(current.trim());
+            current = "";
+            continue;
+        }
+        current += ch;
+    }
+    if (current.trim().length > 0) {
+        result.push(current.trim());
+    }
+    return result;
+}
+function resolveOperand(operand, ctx) {
+    const literal = parseLiteral(operand);
+    if (literal !== undefined)
+        return literal;
+    if (operand.includes("{{")) {
+        const rendered = renderTemplate(operand, ctx);
+        const renderedLiteral = parseLiteral(rendered);
+        return renderedLiteral !== undefined ? renderedLiteral : rendered;
+    }
+    if (operand.startsWith("vars.")) {
+        return getPathValue(ctx.variables, operand.replace(/^vars\./, ""));
+    }
+    if (operand.startsWith("variables.")) {
+        return getPathValue(ctx.variables, operand.replace(/^variables\./, ""));
+    }
+    const contextValue = getPathValue(ctx, operand);
+    if (contextValue !== undefined)
+        return contextValue;
+    return operand;
+}
+function resolveFunction(name, args, ctx) {
+    const resolvedArgs = args.map((arg) => {
+        const literal = parseLiteral(arg);
+        if (literal !== undefined)
+            return literal;
+        return resolveOperand(arg, ctx);
+    });
+    switch (name) {
+        case "upper":
+            return String(resolvedArgs[0] ?? "").toUpperCase();
+        case "lower":
+            return String(resolvedArgs[0] ?? "").toLowerCase();
+        case "toNumber":
+            return Number(resolvedArgs[0] ?? 0);
+        case "random": {
+            const min = Number(resolvedArgs[0] ?? 0);
+            const max = Number(resolvedArgs[1] ?? 1);
+            return Math.random() * (max - min) + min;
+        }
+        case "now":
+            return new Date().toISOString();
+        case "format": {
+            const value = resolvedArgs[0];
+            if (!value)
+                return "";
+            const date = value instanceof Date ? value : new Date(String(value));
+            if (Number.isNaN(date.getTime()))
+                return String(value);
+            return date.toISOString();
+        }
+        case "json.path":
+        case "jsonPath": {
+            const obj = resolvedArgs[0];
+            const path = String(resolvedArgs[1] ?? "");
+            return getPathValue(obj, path);
+        }
+        default:
+            return "";
+    }
+}
+function renderTemplate(template, ctx) {
+    const withShorthand = template.replace(shorthandPattern, (_match, token) => {
+        const value = resolveShortcutToken(token, ctx);
+        if (value !== undefined)
+            return String(value);
+        if (token.includes(".")) {
+            const resolved = resolveOperand(token, ctx);
+            return resolved === undefined ? "" : String(resolved);
+        }
+        return _match;
+    });
+    return withShorthand.replace(templatePattern, (_match, expr) => {
+        const trimmed = String(expr).trim();
+        const fnMatch = trimmed.match(/^([\w\.]+)\((.*)\)$/);
+        if (fnMatch) {
+            const [, fnName, rawArgs] = fnMatch;
+            const args = splitArgs(rawArgs);
+            const value = resolveFunction(fnName, args, ctx);
+            return value === undefined ? "" : String(value);
+        }
+        const value = resolveOperand(trimmed, ctx);
+        return value === undefined ? "" : String(value);
+    });
+}
+function resolveShortcutToken(token, ctx) {
+    switch (token) {
+        case "user":
+            return ctx.user?.id ? `<@${ctx.user.id}>` : "";
+        case "user_id":
+            return ctx.user?.id ?? "";
+        case "user_name":
+            return ctx.user?.username ?? "";
+        case "user_tag":
+            return ctx.user?.discriminator ? `${ctx.user.username}#${ctx.user.discriminator}` : ctx.user?.username ?? "";
+        case "channel":
+            return ctx.channel?.id ? `<#${ctx.channel.id}>` : "";
+        case "channel_id":
+            return ctx.channel?.id ?? "";
+        case "channel_name":
+            return ctx.channel?.name ?? "";
+        case "server":
+            return ctx.guild?.name ?? "";
+        case "server_id":
+            return ctx.guild?.id ?? "";
+        case "server_icon":
+            return ctx.guild?.iconUrl ?? "";
+        default:
+            return undefined;
+    }
+}
+function evaluateCondition(operandLeft, operator, operandRight, ctx) {
+    const left = resolveOperand(operandLeft, ctx);
+    const right = operandRight !== undefined ? resolveOperand(operandRight, ctx) : undefined;
+    const normalizeMentionToId = (value) => {
+        const text = String(value ?? "").trim();
+        if (!text)
+            return "";
+        const roleMatch = text.match(/^<@&(\d+)>$/);
+        if (roleMatch)
+            return roleMatch[1];
+        const userMatch = text.match(/^<@!?(\d+)>$/);
+        if (userMatch)
+            return userMatch[1];
+        const channelMatch = text.match(/^<#(\d+)>$/);
+        if (channelMatch)
+            return channelMatch[1];
+        return text;
+    };
+    const splitCandidateValues = (value) => {
+        const normalized = normalizeMentionToId(value);
+        if (!normalized)
+            return [];
+        return normalized
+            .split(",")
+            .map((item) => normalizeMentionToId(item))
+            .map((item) => item.trim())
+            .filter(Boolean);
+    };
+    const normalizePermission = (value) => String(value ?? "")
+        .trim()
+        .replace(/[\s_]+/g, "")
+        .toLowerCase();
+    const isMentionLike = (value) => /^<[@#]/.test(String(value ?? "").trim());
+    const normalizedLeft = normalizeMentionToId(left);
+    const normalizedRight = normalizeMentionToId(right);
+    const compareWithMentionSupport = () => {
+        if (left === right)
+            return true;
+        if (String(left ?? "") === String(right ?? ""))
+            return true;
+        if (isMentionLike(left) || isMentionLike(right)) {
+            return normalizedLeft !== "" && normalizedLeft === normalizedRight;
+        }
+        return false;
+    };
+    switch (operator) {
+        case "equals":
+            return compareWithMentionSupport();
+        case "notEquals":
+            return !compareWithMentionSupport();
+        case "contains":
+            return String(left ?? "").includes(String(right ?? ""));
+        case "startsWith":
+            return String(left ?? "").startsWith(String(right ?? ""));
+        case "endsWith":
+            return String(left ?? "").endsWith(String(right ?? ""));
+        case "gt":
+            return Number(left) > Number(right);
+        case "lt":
+            return Number(left) < Number(right);
+        case "in":
+            if (Array.isArray(right)) {
+                if (right.includes(left))
+                    return true;
+                if (isMentionLike(left)) {
+                    return right.some((item) => normalizeMentionToId(item) === normalizedLeft);
+                }
+                return false;
+            }
+            return String(right ?? "").includes(String(left ?? ""));
+        case "hasRole":
+            if (Array.isArray(ctx.memberRoles)) {
+                const memberRoleValues = ctx.memberRoles.map((role) => String(role ?? ""));
+                const memberRoleLookup = new Set(memberRoleValues);
+                const memberRoleLowerLookup = new Set(memberRoleValues.map((role) => role.toLowerCase()));
+                const candidates = splitCandidateValues(right);
+                return candidates.some((candidate) => memberRoleLookup.has(candidate) ||
+                    memberRoleLowerLookup.has(candidate.toLowerCase()));
+            }
+            return false;
+        case "hasPermission":
+            if (Array.isArray(ctx.memberRoles)) {
+                const memberPermissionLookup = new Set(ctx.memberRoles.map((value) => normalizePermission(value)));
+                const candidates = splitCandidateValues(right);
+                return candidates.some((candidate) => memberPermissionLookup.has(normalizePermission(candidate)));
+            }
+            return false;
+        default:
+            return false;
+    }
+}
+function evaluateConditionGroup(group, ctx) {
+    if (!group)
+        return true;
+    const op = group.op === "OR" ? "OR" : "AND";
+    const rules = Array.isArray(group.rules) ? group.rules : [];
+    if (rules.length === 0)
+        return true;
+    if (op === "AND") {
+        return rules.every((rule) => {
+            if ("rules" in rule)
+                return evaluateConditionGroup(rule, ctx);
+            return evaluateCondition(rule.left, rule.operator, rule.right, ctx);
+        });
+    }
+    return rules.some((rule) => {
+        if ("rules" in rule)
+            return evaluateConditionGroup(rule, ctx);
+        return evaluateCondition(rule.left, rule.operator, rule.right, ctx);
+    });
+}
+function resolveTemplateValue(value, ctx) {
+    if (!value)
+        return "";
+    return renderTemplate(value, ctx);
+}
+function resolveExpressionValue(value, ctx) {
+    if (!value)
+        return undefined;
+    if (value.includes("{{"))
+        return renderTemplate(value, ctx);
+    return resolveOperand(value, ctx);
+}

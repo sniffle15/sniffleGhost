@@ -5,6 +5,5 @@
 .env.*
 !.env.production.example
 !**/.env.example
-dist
 .next
 prisma/migrations
