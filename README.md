@@ -1,5 +1,4 @@
 # sniffleGhost (Bot Hosting + Command Builder)
-# Local Testing Stuff intigrated, because it is still in beta
 
 sniffleGhost is a monorepo for hosting Discord bots with a visual workflow builder:
 - `apps/web`: Next.js dashboard and builder UI
@@ -18,6 +17,23 @@ sniffleGhost is a monorepo for hosting Discord bots with a visual workflow build
 Release URL:
 - `https://github.com/sniffle15/sniffleGhost/releases/tag/v1.0.0`
 
+### Prerequisite: pnpm
+If `pnpm` is missing, install/enable it first.
+
+Linux/macOS:
+```bash
+corepack enable
+corepack prepare pnpm@10.28.2 --activate
+pnpm -v
+```
+
+Windows (PowerShell):
+```powershell
+corepack enable
+corepack prepare pnpm@10.28.2 --activate
+pnpm -v
+```
+
 ### Windows (PowerShell) - auto download + setup
 ```powershell
 $version = "v1.0.0"
@@ -26,7 +42,8 @@ $zip = "https://github.com/$repo/archive/refs/tags/$version.zip"
 
 Invoke-WebRequest -Uri $zip -OutFile sniffleGhost-$version.zip
 Expand-Archive -Path sniffleGhost-$version.zip -DestinationPath .
-Set-Location "sniffleGhost-$version"
+$folder = Get-ChildItem -Directory | Where-Object { $_.Name -like "sniffleGhost-*" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+Set-Location $folder.FullName
 
 pnpm install
 Copy-Item apps/api/.env.example apps/api/.env
@@ -43,7 +60,7 @@ URL="https://github.com/$REPO/archive/refs/tags/$VERSION.tar.gz"
 
 curl -L "$URL" -o "sniffleGhost-$VERSION.tar.gz"
 tar -xzf "sniffleGhost-$VERSION.tar.gz"
-cd "sniffleGhost-${VERSION#v}"
+cd "$(find . -maxdepth 1 -type d -name 'sniffleGhost-*' | head -n 1)"
 
 pnpm install
 cp apps/api/.env.example apps/api/.env
@@ -57,6 +74,25 @@ cp .env.production.example .env.production
 - `apps/web/.env`
 - `apps/runner/.env`
 - `.env.production` (for server/prod deployment)
+
+### Minimal env checklist
+`apps/api/.env`
+- `DATABASE_URL`
+- `REDIS_URL`
+- `JWT_SECRET`
+- `JWT_REFRESH_SECRET`
+- `ENCRYPTION_KEY`
+- `RUNNER_SECRET`
+- `WEB_URL`
+
+`apps/web/.env`
+- `NEXT_PUBLIC_API_URL`
+- `NEXT_SERVER_ACTIONS_ALLOWED_ORIGINS`
+
+`apps/runner/.env`
+- `API_URL`
+- `RUNNER_SECRET`
+- `REDIS_URL`
 
 ## Local Development
 ### 1) Install
@@ -203,3 +239,8 @@ cat backup.sql | docker exec -i sniffleghost-postgres psql -U "$POSTGRES_USER" "
 - Follow logs: `pnpm prod:logs`
 - Stop prod: `pnpm prod:down`
 - Full typecheck: `pnpm typecheck`
+
+## Repository Hygiene
+- `.env` files are intentionally ignored.
+- Build outputs (`.next`, `dist`, coverage, logs, TS build info) are ignored.
+- Keep `.env.production` private and never commit secrets.
