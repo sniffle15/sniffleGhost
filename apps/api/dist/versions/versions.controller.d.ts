@@ -9,15 +9,15 @@ export declare class VersionsController {
                     id: string;
                     createdAt: Date;
                     userId: string;
-                    botId: string;
                     role: string;
+                    botId: string;
                 }[];
             } & {
-                id: string;
-                createdAt: Date;
-                name: string;
-                updatedAt: Date;
                 status: string;
+                id: string;
+                name: string;
+                createdAt: Date;
+                updatedAt: Date;
                 ownerId: string;
                 description: string | null;
                 prefix: string;
@@ -28,50 +28,50 @@ export declare class VersionsController {
                 lastError: string | null;
             };
         } & {
-            id: string;
-            createdAt: Date;
-            name: string;
-            updatedAt: Date;
             options: import("@prisma/client/runtime/library").JsonValue | null;
             type: string;
-            botId: string;
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
             description: string;
+            botId: string;
             permissions: import("@prisma/client/runtime/library").JsonValue | null;
             cooldownSeconds: number;
         };
     } & {
+        status: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
+        commandId: string;
         versionNumber: number;
         notes: string | null;
         workflowJson: import("@prisma/client/runtime/library").JsonValue;
         compiledAstJson: import("@prisma/client/runtime/library").JsonValue | null;
-        commandId: string;
     }>;
     save(user: any, id: string, body: any): Promise<{
+        status: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
+        commandId: string;
         versionNumber: number;
         notes: string | null;
         workflowJson: import("@prisma/client/runtime/library").JsonValue;
         compiledAstJson: import("@prisma/client/runtime/library").JsonValue | null;
-        commandId: string;
     }>;
     validate(user: any, id: string, body: any): Promise<import("@botghost/shared/dist/workflow/validation").ValidationIssue[]>;
     publish(user: any, id: string): Promise<{
+        status: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
+        commandId: string;
         versionNumber: number;
         notes: string | null;
         workflowJson: import("@prisma/client/runtime/library").JsonValue;
         compiledAstJson: import("@prisma/client/runtime/library").JsonValue | null;
-        commandId: string;
     }>;
     testRun(user: any, id: string, body: any): Promise<{
         actions: any[];

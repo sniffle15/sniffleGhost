@@ -18,7 +18,7 @@ COPY packages/shared ./packages/shared
 COPY apps/runner ./apps/runner
 
 RUN pnpm -C packages/shared build
-RUN pnpm -C apps/runner build
+RUN rm -rf apps/runner/dist && rm -f apps/runner/tsconfig.tsbuildinfo && pnpm -C apps/runner build
 
 FROM node:20-alpine AS runtime
 WORKDIR /app

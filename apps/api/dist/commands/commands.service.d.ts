@@ -11,46 +11,46 @@ export declare class CommandsService {
     private assertCommandRole;
     private createBaseWorkflow;
     list(userId: string, botId: string): Promise<{
-        id: string;
-        botId: string;
-        name: string;
-        description: string;
-        type: string;
         options: import("@prisma/client/runtime/library").JsonValue | null;
-        permissions: import("@prisma/client/runtime/library").JsonValue | null;
-        cooldownSeconds: number;
+        type: string;
+        id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string;
+        botId: string;
+        permissions: import("@prisma/client/runtime/library").JsonValue | null;
+        cooldownSeconds: number;
     }[]>;
     create(userId: string, botId: string, input: any): Promise<{
-        id: string;
-        botId: string;
-        name: string;
-        description: string;
-        type: string;
         options: import("@prisma/client/runtime/library").JsonValue | null;
-        permissions: import("@prisma/client/runtime/library").JsonValue | null;
-        cooldownSeconds: number;
+        type: string;
+        id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string;
+        botId: string;
+        permissions: import("@prisma/client/runtime/library").JsonValue | null;
+        cooldownSeconds: number;
     }>;
     get(userId: string, commandId: string): Promise<{
         bot: {
             members: {
                 id: string;
-                botId: string;
                 createdAt: Date;
                 userId: string;
                 role: string;
+                botId: string;
             }[];
         } & {
+            status: string;
             id: string;
             name: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
-            status: string;
             ownerId: string;
+            description: string | null;
             prefix: string;
             applicationId: string;
             encryptedToken: string;
@@ -59,37 +59,37 @@ export declare class CommandsService {
             lastError: string | null;
         };
     } & {
-        id: string;
-        botId: string;
-        name: string;
-        description: string;
-        type: string;
         options: import("@prisma/client/runtime/library").JsonValue | null;
-        permissions: import("@prisma/client/runtime/library").JsonValue | null;
-        cooldownSeconds: number;
+        type: string;
+        id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string;
+        botId: string;
+        permissions: import("@prisma/client/runtime/library").JsonValue | null;
+        cooldownSeconds: number;
     }>;
     update(userId: string, commandId: string, input: any): Promise<{
-        id: string;
-        botId: string;
-        name: string;
-        description: string;
-        type: string;
         options: import("@prisma/client/runtime/library").JsonValue | null;
-        permissions: import("@prisma/client/runtime/library").JsonValue | null;
-        cooldownSeconds: number;
+        type: string;
+        id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string;
+        botId: string;
+        permissions: import("@prisma/client/runtime/library").JsonValue | null;
+        cooldownSeconds: number;
     }>;
     delete(userId: string, commandId: string): Promise<{
         success: boolean;
     }>;
     listVersions(userId: string, commandId: string): Promise<{
+        status: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         commandId: string;
         versionNumber: number;
         notes: string | null;
@@ -97,10 +97,10 @@ export declare class CommandsService {
         compiledAstJson: import("@prisma/client/runtime/library").JsonValue | null;
     }[]>;
     createVersion(userId: string, commandId: string, notes?: string): Promise<{
+        status: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         commandId: string;
         versionNumber: number;
         notes: string | null;
@@ -115,10 +115,10 @@ export declare class CommandsService {
         success: boolean;
     }>;
     listEventVersions(userId: string, eventId: string): Promise<{
+        status: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         commandId: string;
         versionNumber: number;
         notes: string | null;
@@ -126,10 +126,10 @@ export declare class CommandsService {
         compiledAstJson: import("@prisma/client/runtime/library").JsonValue | null;
     }[]>;
     createEventVersion(userId: string, eventId: string, notes?: string): Promise<{
+        status: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         commandId: string;
         versionNumber: number;
         notes: string | null;

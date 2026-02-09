@@ -3,8 +3,8 @@ export declare class LogsController {
     private logs;
     constructor(logs: LogsService);
     list(user: any, id: string, limit?: string): Promise<{
-        id: string;
         message: string;
+        id: string;
         botId: string;
         level: string;
         ts: Date;

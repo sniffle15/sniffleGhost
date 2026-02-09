@@ -12,11 +12,11 @@ export declare class BotsService {
     private normalizePrefix;
     private assertRole;
     list(userId: string): Promise<{
-        id: string;
-        createdAt: Date;
-        name: string;
-        updatedAt: Date;
         status: string;
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         ownerId: string;
         description: string | null;
         prefix: string;
@@ -26,11 +26,11 @@ export declare class BotsService {
         lastError: string | null;
     }[]>;
     get(userId: string, botId: string): Promise<{
-        id: string;
-        createdAt: Date;
-        name: string;
-        updatedAt: Date;
         status: string;
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         ownerId: string;
         description: string | null;
         prefix: string;
@@ -47,11 +47,11 @@ export declare class BotsService {
         testGuildId?: string;
         prefix?: string;
     }): Promise<{
-        id: string;
-        createdAt: Date;
-        name: string;
-        updatedAt: Date;
         status: string;
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         ownerId: string;
         description: string | null;
         prefix: string;
@@ -61,11 +61,11 @@ export declare class BotsService {
         lastError: string | null;
     }>;
     update(userId: string, botId: string, input: any): Promise<{
-        id: string;
-        createdAt: Date;
-        name: string;
-        updatedAt: Date;
         status: string;
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         ownerId: string;
         description: string | null;
         prefix: string;

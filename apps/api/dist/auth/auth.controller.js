@@ -14,13 +14,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
 const auth_service_1 = require("./auth.service");
 const zod_pipe_1 = require("../common/zod.pipe");
 const shared_1 = require("@botghost/shared");
 const jwt_auth_guard_1 = require("../common/jwt-auth.guard");
 let AuthController = class AuthController {
-    constructor(auth) {
+    constructor(auth, config) {
         this.auth = auth;
+        this.config = config;
     }
     register(body) {
         return this.auth.register(body);
@@ -40,7 +42,10 @@ let AuthController = class AuthController {
     }
     async discordCallback(code, state, res) {
         const result = await this.auth.handleDiscordCallback(code, state);
-        const webUrl = process.env.WEB_URL ?? "http://localhost:3000";
+        const webUrl = this.config.get("WEB_URL");
+        if (!webUrl) {
+            throw new common_1.InternalServerErrorException("WEB_URL is not configured");
+        }
         const params = new URLSearchParams({
             accessToken: result.accessToken,
             refreshToken: result.refreshToken ?? ""
@@ -111,6 +116,7 @@ __decorate([
 ], AuthController.prototype, "me", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)("/auth"),
-    __metadata("design:paramtypes", [auth_service_1.AuthService])
+    __metadata("design:paramtypes", [auth_service_1.AuthService,
+        config_1.ConfigService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

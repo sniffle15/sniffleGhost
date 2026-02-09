@@ -3,11 +3,11 @@ export declare class BotsController {
     private bots;
     constructor(bots: BotsService);
     list(user: any): Promise<{
-        id: string;
-        createdAt: Date;
-        name: string;
-        updatedAt: Date;
         status: string;
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         ownerId: string;
         description: string | null;
         prefix: string;
@@ -17,11 +17,11 @@ export declare class BotsController {
         lastError: string | null;
     }[]>;
     create(user: any, body: any): Promise<{
-        id: string;
-        createdAt: Date;
-        name: string;
-        updatedAt: Date;
         status: string;
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         ownerId: string;
         description: string | null;
         prefix: string;
@@ -31,11 +31,11 @@ export declare class BotsController {
         lastError: string | null;
     }>;
     get(user: any, id: string): Promise<{
-        id: string;
-        createdAt: Date;
-        name: string;
-        updatedAt: Date;
         status: string;
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         ownerId: string;
         description: string | null;
         prefix: string;
@@ -45,11 +45,11 @@ export declare class BotsController {
         lastError: string | null;
     }>;
     update(user: any, id: string, body: any): Promise<{
-        id: string;
-        createdAt: Date;
-        name: string;
-        updatedAt: Date;
         status: string;
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         ownerId: string;
         description: string | null;
         prefix: string;

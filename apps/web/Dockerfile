@@ -18,7 +18,7 @@ COPY packages/shared ./packages/shared
 COPY apps/web ./apps/web
 
 RUN pnpm -C packages/shared build
-RUN pnpm -C apps/web build
+RUN rm -rf apps/web/.next && rm -f apps/web/tsconfig.tsbuildinfo && pnpm -C apps/web build
 
 FROM node:20-alpine AS runtime
 WORKDIR /app

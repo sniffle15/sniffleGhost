@@ -14,16 +14,16 @@ export declare class LogsService {
     logStream(): import("rxjs").Observable<BotLogEvent>;
     ensureAccess(userId: string, botId: string): Promise<void>;
     list(botId: string, limit?: number): Promise<{
-        id: string;
         message: string;
+        id: string;
         botId: string;
         level: string;
         ts: Date;
         meta: import("@prisma/client/runtime/library").JsonValue | null;
     }[]>;
     create(botId: string, level: string, message: string, meta?: any): Promise<{
-        id: string;
         message: string;
+        id: string;
         botId: string;
         level: string;
         ts: Date;

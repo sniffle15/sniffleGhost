@@ -14,15 +14,15 @@ export declare class VersionsService {
                     id: string;
                     createdAt: Date;
                     userId: string;
-                    botId: string;
                     role: string;
+                    botId: string;
                 }[];
             } & {
-                id: string;
-                createdAt: Date;
-                name: string;
-                updatedAt: Date;
                 status: string;
+                id: string;
+                name: string;
+                createdAt: Date;
+                updatedAt: Date;
                 ownerId: string;
                 description: string | null;
                 prefix: string;
@@ -33,50 +33,50 @@ export declare class VersionsService {
                 lastError: string | null;
             };
         } & {
-            id: string;
-            createdAt: Date;
-            name: string;
-            updatedAt: Date;
             options: Prisma.JsonValue | null;
             type: string;
-            botId: string;
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
             description: string;
+            botId: string;
             permissions: Prisma.JsonValue | null;
             cooldownSeconds: number;
         };
     } & {
+        status: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
+        commandId: string;
         versionNumber: number;
         notes: string | null;
         workflowJson: Prisma.JsonValue;
         compiledAstJson: Prisma.JsonValue | null;
-        commandId: string;
     }>;
     saveWorkflow(userId: string, versionId: string, workflow: WorkflowGraph): Promise<{
+        status: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
+        commandId: string;
         versionNumber: number;
         notes: string | null;
         workflowJson: Prisma.JsonValue;
         compiledAstJson: Prisma.JsonValue | null;
-        commandId: string;
     }>;
     validate(userId: string, versionId: string, workflow: WorkflowGraph): Promise<import("@botghost/shared/dist/workflow/validation").ValidationIssue[]>;
     publish(userId: string, versionId: string): Promise<{
+        status: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
+        commandId: string;
         versionNumber: number;
         notes: string | null;
         workflowJson: Prisma.JsonValue;
         compiledAstJson: Prisma.JsonValue | null;
-        commandId: string;
     }>;
     testRun(userId: string, versionId: string, input: any): Promise<{
         actions: any[];

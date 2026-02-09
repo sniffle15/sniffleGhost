@@ -4,6 +4,7 @@ WORKDIR /app
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
+RUN apk add --no-cache openssl libc6-compat
 RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -19,7 +20,8 @@ COPY apps/api ./apps/api
 
 RUN pnpm -C packages/shared build
 RUN pnpm -C apps/api prisma generate
-RUN pnpm -C apps/api build
+# Force a deterministic build inside Docker even if tsbuildinfo is present in repo/release assets.
+RUN rm -rf apps/api/dist && rm -f apps/api/tsconfig.tsbuildinfo && pnpm -C apps/api build
 
 FROM node:20-alpine AS runtime
 WORKDIR /app
@@ -28,6 +30,7 @@ ENV NODE_ENV=production
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
+RUN apk add --no-cache openssl libc6-compat
 RUN corepack enable
 
 COPY --from=build /app/package.json ./package.json

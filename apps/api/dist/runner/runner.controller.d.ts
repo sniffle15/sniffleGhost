@@ -17,32 +17,32 @@ export declare class RunnerController {
         success: boolean;
     }>;
     createLog(id: string, body: any): Promise<{
+        message: string;
         id: string;
         botId: string;
-        message: string;
         level: string;
         ts: Date;
         meta: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     getVariable(id: string, scope: string, scopeId: string, key: string): Promise<{
+        value: import("@prisma/client/runtime/library").JsonValue;
         id: string;
-        botId: string;
         createdAt: Date;
         updatedAt: Date;
-        value: import("@prisma/client/runtime/library").JsonValue;
         scope: string;
-        scopeId: string;
+        botId: string;
         key: string;
+        scopeId: string;
     } | null>;
     setVariable(id: string, body: any): Promise<{
+        value: import("@prisma/client/runtime/library").JsonValue;
         id: string;
-        botId: string;
         createdAt: Date;
         updatedAt: Date;
-        value: import("@prisma/client/runtime/library").JsonValue;
         scope: string;
-        scopeId: string;
+        botId: string;
         key: string;
+        scopeId: string;
     }>;
     listPublishedCommands(id: string): Promise<{
         id: string;
@@ -53,10 +53,10 @@ export declare class RunnerController {
         permissions: import("@prisma/client/runtime/library").JsonValue;
         cooldownSeconds: number;
         version: {
+            status: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            status: string;
             commandId: string;
             versionNumber: number;
             notes: string | null;
@@ -73,10 +73,10 @@ export declare class RunnerController {
         permissions: import("@prisma/client/runtime/library").JsonValue;
         cooldownSeconds: number;
         version: {
+            status: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            status: string;
             commandId: string;
             versionNumber: number;
             notes: string | null;
@@ -91,10 +91,10 @@ export declare class RunnerController {
         type: string;
         eventType: string | null;
         version: {
+            status: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            status: string;
             commandId: string;
             versionNumber: number;
             notes: string | null;
