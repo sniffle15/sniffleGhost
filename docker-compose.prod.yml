@@ -37,23 +37,23 @@ services:
       redis:
         condition: service_healthy
     environment:
-      NODE_ENV: production
-      PORT: 4000
-      HOST: 0.0.0.0
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
-      ENCRYPTION_KEY_FALLBACKS: ${ENCRYPTION_KEY_FALLBACKS:-}
-      REDIS_URL: redis://redis:6379
-      RUNNER_SECRET: ${RUNNER_SECRET}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
-      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
-      DISCORD_REDIRECT_URI: ${DISCORD_REDIRECT_URI}
-      WEB_URL: ${WEB_PUBLIC_URL}
+      NODE_ENV: "production"
+      PORT: "4000"
+      HOST: "0.0.0.0"
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
+      JWT_SECRET: "${JWT_SECRET}"
+      JWT_REFRESH_SECRET: "${JWT_REFRESH_SECRET}"
+      ENCRYPTION_KEY: "${ENCRYPTION_KEY}"
+      ENCRYPTION_KEY_FALLBACKS: "${ENCRYPTION_KEY_FALLBACKS}"
+      REDIS_URL: "redis://redis:6379"
+      RUNNER_SECRET: "${RUNNER_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL}"
+      DISCORD_CLIENT_ID: "${DISCORD_CLIENT_ID}"
+      DISCORD_CLIENT_SECRET: "${DISCORD_CLIENT_SECRET}"
+      DISCORD_REDIRECT_URI: "${DISCORD_REDIRECT_URI}"
+      WEB_URL: "${WEB_PUBLIC_URL}"
     ports:
-      - "${API_PORT:-4000}:4000"
+      - "${API_PORT}:4000"
 
   runner:
     build:
@@ -66,12 +66,12 @@ services:
       redis:
         condition: service_healthy
     environment:
-      NODE_ENV: production
-      API_URL: http://api:4000
-      RUNNER_SECRET: ${RUNNER_SECRET}
-      REDIS_URL: redis://redis:6379
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-      HEARTBEAT_INTERVAL_MS: ${HEARTBEAT_INTERVAL_MS:-10000}
+      NODE_ENV: "production"
+      API_URL: "http://api:4000"
+      RUNNER_SECRET: "${RUNNER_SECRET}"
+      REDIS_URL: "redis://redis:6379"
+      LOG_LEVEL: "${LOG_LEVEL}"
+      HEARTBEAT_INTERVAL_MS: "${HEARTBEAT_INTERVAL_MS}"
 
   web:
     build:
@@ -82,13 +82,13 @@ services:
       api:
         condition: service_started
     environment:
-      NODE_ENV: production
-      PORT: 3000
-      NEXT_PUBLIC_API_URL: ${API_PUBLIC_URL}
-      NEXT_PUBLIC_WEB_URL: ${WEB_PUBLIC_URL}
-      NEXT_SERVER_ACTIONS_ALLOWED_ORIGINS: ${NEXT_SERVER_ACTIONS_ALLOWED_ORIGINS}
+      NODE_ENV: "production"
+      PORT: "3000"
+      NEXT_PUBLIC_API_URL: "${API_PUBLIC_URL}"
+      NEXT_PUBLIC_WEB_URL: "${WEB_PUBLIC_URL}"
+      NEXT_SERVER_ACTIONS_ALLOWED_ORIGINS: "${NEXT_SERVER_ACTIONS_ALLOWED_ORIGINS}"
     ports:
-      - "${WEB_PORT:-3000}:3000"
+      - "${WEB_PORT}:3000"
 
 volumes:
   postgres_data:

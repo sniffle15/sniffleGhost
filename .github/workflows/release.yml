@@ -1,4 +1,4 @@
-name: Create Release Asset
+name: Create Slim Release Asset
 
 on:
   release:
@@ -13,25 +13,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10.28.2
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Zip Project
+      - name: Zip Project (Clean)
+        # Erstellt die ZIP und schließt node_modules, .git und andere unnötige Dinge aus
         run: |
           zip -r sniffleGhost.zip . \
-            -x "node_modules/*" ".git/*" ".next/*" "**/.next/*" "dist/*" "**/dist/*" \
-               "coverage/*" "**/coverage/*" "*.log" "*.tsbuildinfo" "**/*.tsbuildinfo" \
-               ".env" "apps/*/.env" "apps/*/.env.local" ".env.production"
+          -x "node_modules/*" \
+          -x ".git/*" \
+          -x ".github/*" \
+          -x "*.log" \
+          -x ".vscode/*"
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
@@ -39,4 +29,3 @@ jobs:
           files: sniffleGhost.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
