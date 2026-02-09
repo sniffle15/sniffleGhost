@@ -38,7 +38,8 @@ COPY --from=build /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages/shared ./packages/shared
 COPY --from=build /app/apps/api ./apps/api
+RUN chmod +x /app/apps/api/docker-entrypoint.sh
 
 EXPOSE 4000
 
-CMD ["node", "apps/api/dist/main.js"]
+CMD ["sh", "/app/apps/api/docker-entrypoint.sh"]

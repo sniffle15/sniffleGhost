@@ -27,8 +27,11 @@ jobs:
         run: pnpm install
 
       - name: Zip Project
-        # Hier wird alles in eine ZIP gepackt, außer node_modules und .git (spart Platz)
-        run: zip -r sniffleGhost.zip . -x "node_modules/*" ".git/*"
+        run: |
+          zip -r sniffleGhost.zip . \
+            -x "node_modules/*" ".git/*" ".next/*" "**/.next/*" "dist/*" "**/dist/*" \
+               "coverage/*" "**/coverage/*" "*.log" "*.tsbuildinfo" "**/*.tsbuildinfo" \
+               ".env" "apps/*/.env" "apps/*/.env.local" ".env.production"
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
@@ -36,3 +39,4 @@ jobs:
           files: sniffleGhost.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
