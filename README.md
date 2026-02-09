@@ -1,6 +1,5 @@
 # sniffleGhost (Bot Hosting + Command Builder)
 # Local Testing Stuff intigrated, because it is still in beta
-# test test test
 
 sniffleGhost is a monorepo for hosting Discord bots with a visual workflow builder:
 - `apps/web`: Next.js dashboard and builder UI
