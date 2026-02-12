@@ -166,11 +166,19 @@ Important:
 - `RUNNER_SECRET` must match for `api` and `runner` (same value in this env file).
 - `DISCORD_REDIRECT_URI` must exactly match your Discord OAuth callback URL.
 - `DATABASE_URL` for production is auto-generated from `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` in `docker-compose.prod.yml`.
+- `API_PUBLIC_URL` is baked into the Next.js client build. If you change it, rebuild `web` (`pnpm prod:up` or `docker compose ... up -d --build web`).
+
+OAuth port rule:
+- If API is directly exposed on `:4000`, then use `API_PUBLIC_URL=http://YOUR_HOST:4000` and `DISCORD_REDIRECT_URI=http://YOUR_HOST:4000/auth/discord/callback`.
+- If you want everything on `:80/:443`, use a reverse proxy and route an API host (e.g. `api.example.com`) to container `api:4000`. Then use `https://api.example.com` in both values.
 
 ### 2) Build and start production stack
 ```bash
 pnpm prod:up
 ```
+
+Do not run plain `docker compose up -d` on the server root for production.
+That starts `docker-compose.yml` (local dev DB only) instead of `docker-compose.prod.yml`.
 
 ### 3) Run Prisma migrations in production
 ```bash
@@ -191,6 +199,16 @@ pnpm prod:logs
 ```bash
 pnpm prod:down
 ```
+
+### 7) Full restart (safe production command)
+```bash
+pnpm prod:restart
+```
+This command:
+- stops accidental local stack (if any)
+- stops current production stack
+- rebuilds and starts production stack
+- prints `ps` for production services
 
 ### Troubleshooting: API restart loop with `P1000` (DB auth failed)
 If logs show:
@@ -241,12 +259,12 @@ pnpm prod:migrate
 ## Backup and Restore (PostgreSQL)
 ### Backup
 ```bash
-docker exec -t sniffleghost-postgres pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > backup.sql
+docker compose --env-file .env.production -f docker-compose.prod.yml exec -T postgres pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > backup.sql
 ```
 
 ### Restore
 ```bash
-cat backup.sql | docker exec -i sniffleghost-postgres psql -U "$POSTGRES_USER" "$POSTGRES_DB"
+cat backup.sql | docker compose --env-file .env.production -f docker-compose.prod.yml exec -T postgres psql -U "$POSTGRES_USER" "$POSTGRES_DB"
 ```
 
 ### Restart
@@ -268,6 +286,8 @@ pnpm prod:down && pnpm install --frozen-lockfile && pnpm prod:up && pnpm prod:mi
 
 ## Useful Commands
 - Start prod: `pnpm prod:up`
+- Restart prod (safe): `pnpm prod:restart`
+- Show prod containers: `pnpm prod:ps`
 - Prod migrations: `pnpm prod:migrate`
 - Recover DB auth mismatch: `pnpm prod:recover-db-auth`
 - Follow logs: `pnpm prod:logs`

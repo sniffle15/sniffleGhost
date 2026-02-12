@@ -1,7 +1,6 @@
 ﻿services:
   postgres:
     image: postgres:16-alpine
-    container_name: botghost-postgres
     environment:
       POSTGRES_USER: botghost
       POSTGRES_PASSWORD: botghost
@@ -12,7 +11,6 @@
       - postgres_data:/var/lib/postgresql/data
   redis:
     image: redis:7-alpine
-    container_name: botghost-redis
     ports:
       - "6379:6379"
     volumes:

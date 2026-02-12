@@ -77,6 +77,9 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: "${API_PUBLIC_URL}"
+        NEXT_PUBLIC_WEB_URL: "${WEB_PUBLIC_URL}"
     restart: unless-stopped
     depends_on:
       api:

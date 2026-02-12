@@ -45,6 +45,22 @@ This runs:
 - `docker compose up -d` (Postgres + Redis)
 - `apps/api`, `apps/web`, `apps/runner`, and `packages/shared` in dev mode
 
+## Production Warning
+The commands in this file are for local development only.
+
+On a server, do not run plain:
+```bash
+docker compose up -d
+```
+because that starts only the local DB stack from `docker-compose.yml`.
+
+Use production commands instead:
+```bash
+pnpm prod:restart
+pnpm prod:migrate
+pnpm prod:logs
+```
+
 ### 4) Initialize DB (first time only)
 ```bash
 pnpm db:migrate -- --name init
