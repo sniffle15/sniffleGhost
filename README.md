@@ -165,6 +165,7 @@ Important:
 - `ENCRYPTION_KEY` must be stable (do not rotate casually, or keep old keys in `ENCRYPTION_KEY_FALLBACKS`).
 - `RUNNER_SECRET` must match for `api` and `runner` (same value in this env file).
 - `DISCORD_REDIRECT_URI` must exactly match your Discord OAuth callback URL.
+- `DATABASE_URL` for production is auto-generated from `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` in `docker-compose.prod.yml`.
 
 ### 2) Build and start production stack
 ```bash
@@ -189,6 +190,25 @@ pnpm prod:logs
 ### 6) Stop stack
 ```bash
 pnpm prod:down
+```
+
+### Troubleshooting: API restart loop with `P1000` (DB auth failed)
+If logs show:
+- `PrismaClientInitializationError ... Authentication failed against database server at postgres`
+
+run:
+```bash
+pnpm prod:recover-db-auth
+pnpm prod:up
+pnpm prod:migrate
+pnpm prod:logs
+```
+
+If you changed DB credentials and still cannot recover (and data loss is acceptable), reset volumes:
+```bash
+docker compose --env-file .env.production -f docker-compose.prod.yml down -v --remove-orphans
+pnpm prod:up
+pnpm prod:migrate
 ```
 
 ---
@@ -249,6 +269,7 @@ pnpm prod:down && pnpm install --frozen-lockfile && pnpm prod:up && pnpm prod:mi
 ## Useful Commands
 - Start prod: `pnpm prod:up`
 - Prod migrations: `pnpm prod:migrate`
+- Recover DB auth mismatch: `pnpm prod:recover-db-auth`
 - Follow logs: `pnpm prod:logs`
 - Stop prod: `pnpm prod:down`
 - Full typecheck: `pnpm typecheck`

@@ -12,6 +12,7 @@
     "prod:down": "docker compose --env-file .env.production -f docker-compose.prod.yml down",
     "prod:logs": "docker compose --env-file .env.production -f docker-compose.prod.yml logs -f --tail=200",
     "prod:migrate": "docker compose --env-file .env.production -f docker-compose.prod.yml run --rm api pnpm -C apps/api prisma migrate deploy",
+    "prod:recover-db-auth": "bash ./scripts/prod/recover-db-auth.sh",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
